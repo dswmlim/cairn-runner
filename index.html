@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Cairn Runner — a tiny platformer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="game" width="640" height="360"></canvas>
+
+    <!-- Mute / pause buttons (top-right overlay) -->
+    <div id="top-controls">
+      <button id="btn-mute" type="button" aria-label="Toggle sound">🔊</button>
+      <button id="btn-pause" type="button" aria-label="Pause">⏸</button>
+    </div>
+
+    <!-- On-screen touch controls (shown on touch devices) -->
+    <div id="touch-controls" aria-hidden="true">
+      <div class="dpad">
+        <button class="tc" data-key="left" aria-label="Left">◀</button>
+        <button class="tc" data-key="right" aria-label="Right">▶</button>
+      </div>
+      <div class="actions">
+        <button class="tc" data-key="jump" aria-label="Jump">⤴</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint">
+    Arrows / WASD to move · Space / Up / W to jump · M mute · P pause · R restart
+  </p>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
