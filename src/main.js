@@ -6,6 +6,8 @@ import { Input } from './engine/input.js';
 import { DemoInput } from './engine/demo.js';
 import { Audio } from './engine/audio.js';
 import { Renderer } from './engine/renderer.js';
+import { Assets } from './engine/assets.js';
+import { drawSpritePicker } from './engine/spritepicker.js';
 import { Level } from './engine/levels.js';
 import { Player, Enemy } from './engine/entities.js';
 import { aabb } from './engine/physics.js';
@@ -14,9 +16,11 @@ import L2 from './levels/level2.js';
 
 const LEVEL_DEFS = [L1, L2];
 const DEMO = new URLSearchParams(location.search).has('demo');
+const PICK = new URLSearchParams(location.search).get('pick'); // 'tiles' | 'chars'
 
 const canvas = document.getElementById('game');
-const renderer = new Renderer(canvas);
+const assets = new Assets();
+const renderer = new Renderer(canvas, assets);
 const audio = new Audio();
 const input = DEMO ? new DemoInput() : new Input();
 
@@ -183,6 +187,13 @@ function render() {
 let last = performance.now();
 let acc = 0;
 function frame(now) {
+  // Debug: sprite picker overlay instead of the game.
+  if (PICK) {
+    drawSpritePicker(renderer.ctx, assets, PICK, canvas);
+    requestAnimationFrame(frame);
+    return;
+  }
+
   let elapsed = (now - last) / 1000;
   last = now;
   if (elapsed > 0.25) elapsed = 0.25; // clamp after tab-switch to avoid spiral
@@ -222,4 +233,7 @@ window.addEventListener('resize', () => renderer.resize());
 
 renderer.resize();
 loadLevel(0); // load so the title screen has a backdrop
-requestAnimationFrame(frame);
+
+// Load sprite art (falls back to shapes if assets/ is missing), then run.
+assets.load().catch((e) => console.warn('[assets] load issue, using fallback art', e))
+  .finally(() => { requestAnimationFrame(frame); });

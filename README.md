@@ -24,9 +24,47 @@ All art is drawn with canvas shapes. Drop it on GitHub Pages and it just runs.
 - Coins, checkpoints, end flag, time bonus
 - HUD: score / coins / lives / time / level
 - Camera follows the player, clamped to level bounds, with parallax hills
+- **Sprite-based rendering** (Kenney CC0 pack) with automatic shape fallback
+- Layered parallax background: gradient sky, drifting clouds, mountains, hills
+- Animated player (idle/walk/jump) and enemies; built-in sprite-picker debug overlay
 - Web Audio sound effects + mute
 - Keyboard (Arrows/WASD + Space) **and** on-screen touch buttons
 - Fixed-timestep 60 FPS loop, viewport tile culling, pause-on-blur
+
+## Graphics & assets
+
+The game renders with **real sprite art** when you add a spritesheet, and falls
+back to simple canvas shapes when none is present — so it always runs.
+
+**To turn on the full pixel-art look** (free, CC0, ~250 kB):
+
+1. Download Kenney's **Pixel Platformer** pack: <https://kenney.nl/assets/pixel-platformer>
+   (CC0 1.0 — usable anywhere, no attribution required).
+2. Unzip it, then copy two files into `assets/` and rename:
+
+   | From the pack                              | Rename to                |
+   |--------------------------------------------|--------------------------|
+   | `Tilemap/tilemap_packed.png`               | `assets/tiles.png`       |
+   | `Tilemap/tilemap-characters_packed.png`    | `assets/characters.png`  |
+
+3. Reload. Tiles, player, enemies, coins, and flag now use the sprites.
+
+The background (sky gradient, parallax clouds/mountains/hills) is drawn
+procedurally, so it layers nicely behind whatever sprite pack you use.
+
+### If a sprite looks wrong (wrong cell)
+
+Sprite positions are mapped in `src/engine/assets.js` (`TILES` and `CHARS` —
+each is a `[col, row]` into the sheet). Different pack versions can shift these.
+Use the built-in **sprite picker** to find the right cell:
+
+- Open `…/?pick=tiles` or `…/?pick=chars` — it overlays the sheet with a labelled
+  `col,row` grid. Read the cell you want and edit the mapping in `assets.js`.
+
+### Using your own art
+
+Any spritesheet works. Set the cell size and grid in `SHEET` (in `assets.js`),
+then point `TILES`/`CHARS` at the cells you want. Nothing else changes.
 
 ## Run locally
 
@@ -147,6 +185,8 @@ of the browser build — prefer the real method above for anything user-facing.
 ├── .gitignore
 ├── docs/
 │   └── README.md          # gameplay.gif lives here once generated
+├── assets/
+│   └── README.md          # where to drop the Kenney sprite sheets
 ├── tools/
 │   ├── gif.sh             # ffmpeg recording -> GIF (bash)
 │   ├── gif.ps1            # ffmpeg recording -> GIF (PowerShell)
@@ -157,11 +197,13 @@ of the browser build — prefer the real method above for anything user-facing.
     │   ├── constants.js   # all tunables + tile legend
     │   ├── input.js       # keyboard + touch, scroll prevention
     │   ├── demo.js        # gap-aware auto-player for recording mode
+    │   ├── assets.js      # spritesheet loader + atlas (Kenney mapping)
+    │   ├── spritepicker.js# debug overlay to find sprite cells
     │   ├── audio.js       # Web Audio SFX + mute
     │   ├── physics.js     # AABB tile collision
     │   ├── levels.js      # string map -> grid + spawns
     │   ├── entities.js    # Player, Enemy
-    │   └── renderer.js    # canvas drawing, camera, HUD, screens
+    │   └── renderer.js    # sprite + shape drawing, camera, HUD, screens
     └── levels/
         ├── level1.js
         └── level2.js
